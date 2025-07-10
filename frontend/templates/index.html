@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkReach</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <i class="fas fa-filter"></i>
+                    LinkReach
+                </h1>
+                <p class="subtitle">AI-powered filtering for your LinkedIn connections</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Help Section -->
+            <section class="help-section" id="helpSection">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-question-circle"></i> How to Export LinkedIn Connections</h2>
+                        <p>Follow these steps to get your connections CSV file</p>
+                    </div>
+                    
+                    <div class="help-content">
+                        <div class="help-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Go to LinkedIn Settings</h3>
+                                    <p>On desktop, click on your profile picture (top right) and select "Settings & Privacy".</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Navigate to Data Privacy</h3>
+                                    <p>In the left sidebar, click "Data privacy", then click "Get a copy of your data" under "How LinkedIn uses your data".</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Choose Data to Export</h3>
+                                    <p>Select "Connections" (or choose "Want something in particular?" > check "Connections").</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h3>Request Archive</h3>
+                                    <p>Click "Request archive" and verify your identity if prompted.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h3>Download the File</h3>
+                                    <p>LinkedIn will email you a link within ~10 minutes. Download the first archive and extract the <code>connections.csv</code> file.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="help-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p><strong>Note:</strong> The CSV file will contain your connections' information including names, companies, positions, and connection dates.</p>
+                        </div>
+                        
+                        <div class="csv-format">
+                            <h3><i class="fas fa-table"></i> Expected CSV Format</h3>
+                            <p>Your <code>connections.csv</code> file should have the following columns:</p>
+                            <div class="format-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Column</th>
+                                            <th>Description</th>
+                                            <th>Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>First Name</code></td>
+                                            <td>Connection's first name</td>
+                                            <td>John</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Last Name</code></td>
+                                            <td>Connection's last name</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>URL</code></td>
+                                            <td>LinkedIn profile URL</td>
+                                            <td>https://www.linkedin.com/in/johndoe</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Email Address</code></td>
+                                            <td>Email (if shared)</td>
+                                            <td>john.doe@example.com</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Company</code></td>
+                                            <td>Current company</td>
+                                            <td>Google</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Position</code></td>
+                                            <td>Current job title</td>
+                                            <td>Software Engineer</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Connected On</code></td>
+                                            <td>Connection date</td>
+                                            <td>15 Jan 2024</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="help-actions">
+                            <button class="btn btn-secondary" onclick="toggleHelp()">
+                                <i class="fas fa-eye-slash"></i>
+                                <span>Hide Instructions</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Show Instructions Button (hidden by default) -->
+            <section class="show-instructions-section" id="showInstructionsSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-question-circle"></i> Need Help?</h2>
+                        <p>Don't know how to export your LinkedIn connections?</p>
+                    </div>
+                    
+                    <div class="help-actions">
+                        <button class="btn btn-primary" onclick="toggleHelp()">
+                            <i class="fas fa-eye"></i>
+                            <span>Show Instructions</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-upload"></i> Upload Your Connections</h2>
+                        <p>Upload your LinkedIn connections CSV file to get started</p>
+                    </div>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Drop your CSV file here</h3>
+                            <p>or click to browse</p>
+                            <input type="file" id="fileInput" accept=".csv" hidden>
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                Choose File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-csv"></i>
+                            <span id="fileName"></span>
+                            <span id="fileSize"></span>
+                            <span class="upload-status">
+                                <i class="fas fa-check-circle"></i>
+                                File uploaded successfully
+                            </span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section" id="filterSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-magic"></i> AI Filter</h2>
+                        <p>Describe what you're looking for in natural language</p>
+                    </div>
+                    
+                    <div class="filter-form">
+                        <div class="form-group">
+                            <label for="promptInput">Filter Prompt</label>
+                            <textarea 
+                                id="promptInput" 
+                                placeholder="e.g., Show me all software engineers at Google, or Find people in marketing roles..."
+                                rows="3"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="filterBtn" onclick="filterConnections()">
+                                <i class="fas fa-search"></i>
+                                Filter Connections
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-bar"></i> Results</h2>
+                        <div class="results-summary" id="resultsSummary"></div>
+                    </div>
+                    
+                    <div class="results-content">
+                        <div class="results-preview" id="resultsPreview"></div>
+                        
+                        <div class="results-actions">
+                            <button class="btn btn-success" id="downloadBtn" onclick="downloadResults()">
+                                <i class="fas fa-download"></i>
+                                Download Results
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetApp()">
+                                <i class="fas fa-redo"></i>
+                                Start Over
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p id="loadingMessage">Processing...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 LinkReach. Powered by AI.</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 
