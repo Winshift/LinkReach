@@ -12,8 +12,11 @@ COPY . /code/
 # Set working directory to app folder
 WORKDIR /code
 
-# Expose the port
-EXPOSE 7860
+# Add the current directory to Python path
+ENV PYTHONPATH=/code
+
+# Expose the port (matching the uvicorn command)
+EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"] 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
