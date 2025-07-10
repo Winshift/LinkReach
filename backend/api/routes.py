@@ -4,9 +4,9 @@ import pandas as pd
 from typing import Dict, Any
 import logging
 
-from ..models.schemas import FilterRequest, FilterResponse, ErrorResponse, FileUploadResponse
-from ..services.csv_service import CSVService
-from ..services.ai_service import AIService
+from backend.models.schemas import FilterRequest, FilterResponse, ErrorResponse, FileUploadResponse
+from backend.services.csv_service import CSVService
+from backend.services.ai_service import AIService
 
 logger = logging.getLogger(__name__)
 

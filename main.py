@@ -5,6 +5,11 @@ from fastapi.responses import FileResponse, JSONResponse
 import uvicorn
 import logging
 from pathlib import Path
+import sys
+import os
+
+# Add the current directory to Python path
+sys.path.insert(0, os.getcwd())
 
 from backend.api.routes import router as api_router
 
