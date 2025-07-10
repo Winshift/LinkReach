@@ -1,3 +1,14 @@
+
+---
+title: LinkReach
+emoji: 📈
+colorFrom: yellow
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
+
 # LinkedIn Connections Filter
 
 A modern, AI-powered web application for filtering LinkedIn connections using natural language prompts. Built with FastAPI backend and a clean, responsive frontend.
@@ -187,3 +198,4 @@ If you encounter any issues:
 - [ ] User authentication
 - [ ] Saved filter templates
 - [ ] Analytics dashboard 
+
