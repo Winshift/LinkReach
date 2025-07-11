@@ -157,8 +157,12 @@ class LinkedInFilterApp {
             const result = await response.json();
             this.showResults(result);
             this.showToast('Filtering completed successfully!', 'success');
-            document.getElementById('promptInput').value = '';
-            // Do not hide the prompt section or disable the filter button
+            // document.getElementById('promptInput').value = '';
+            // Scroll to results section
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) {
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
         } catch (error) {
             this.showToast(`Filtering failed: ${error.message}`, 'error');
         } finally {
@@ -270,8 +274,11 @@ class LinkedInFilterApp {
         const filterPromptLabelGroup = document.getElementById('filterPromptLabelGroup');
         const filterPromptActions = document.getElementById('filterPromptActions');
         if (uploadedInfo) {
+            // Remove all children (defensive)
+            while (uploadedInfo.firstChild) {
+                uploadedInfo.removeChild(uploadedInfo.firstChild);
+            }
             uploadedInfo.style.display = 'flex';
-            uploadedInfo.textContent = '';
             const icon = document.createElement('i');
             icon.className = 'fas fa-check-circle';
             icon.style.color = '#2ecc40';
@@ -292,16 +299,19 @@ class LinkedInFilterApp {
         document.getElementById('promptInput').value = '';
         document.getElementById('fileInfo').style.display = 'none';
         document.getElementById('uploadSection').style.display = 'block';
-        // Hide the uploaded info indicator and filter prompt UI
+        // Hide and clear the uploaded info indicator
         const uploadedInfo = document.getElementById('uploadedInfo');
+        if (uploadedInfo) {
+            uploadedInfo.style.display = 'none';
+            uploadedInfo.innerHTML = '';
+        }
+        // Always show the prompt box and its actions
         const filterPromptWrapper = document.getElementById('filterPromptWrapper');
         const filterPromptLabelGroup = document.getElementById('filterPromptLabelGroup');
         const filterPromptActions = document.getElementById('filterPromptActions');
-        if (uploadedInfo) uploadedInfo.style.display = 'none';
-        if (filterPromptWrapper) filterPromptWrapper.style.display = 'none';
-        if (filterPromptLabelGroup) filterPromptLabelGroup.style.display = 'none';
-        if (filterPromptActions) filterPromptActions.style.display = 'none';
-        // document.getElementById('filterSection').style.display = 'none';
+        if (filterPromptWrapper) filterPromptWrapper.style.display = 'flex';
+        if (filterPromptLabelGroup) filterPromptLabelGroup.style.display = 'flex';
+        if (filterPromptActions) filterPromptActions.style.display = 'block';
         document.getElementById('resultsSection').style.display = 'none';
     }
 
@@ -395,6 +405,27 @@ function toggleHelp() {
         showInstructionsSection.style.display = 'block';
         icon.className = 'fas fa-eye';
         text.textContent = 'Show Instructions';
+    }
+}
+
+function toggleInstructions() {
+    const helpPromptCard = document.getElementById('helpPromptCard');
+    const helpInstructionsCard = document.getElementById('helpInstructionsCard');
+    const btns = document.querySelectorAll('#toggleInstructionsBtn');
+    if (helpPromptCard.style.display !== 'none') {
+        helpPromptCard.style.display = 'none';
+        helpInstructionsCard.style.display = 'block';
+        // Update button in instructions card
+        btns.forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Instructions';
+        });
+    } else {
+        helpPromptCard.style.display = 'block';
+        helpInstructionsCard.style.display = 'none';
+        // Update button in prompt card
+        btns.forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-eye"></i> Show Instructions';
+        });
     }
 }
 
