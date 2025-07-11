@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Request
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import FileResponse
 import pandas as pd
 from typing import Dict, Any
@@ -29,7 +29,7 @@ async def upload_csv(
     file: UploadFile = File(...),
     csv_service: CSVService = Depends(get_csv_service)
 ):
-    """Upload and validate CSV file, store DataFrame in a temp file, return file_id"""
+    """Upload and validate CSV file, store DataFrame in a temp file, return file_id (stateless)"""
     try:
         if not file.filename.endswith('.csv'):
             raise HTTPException(status_code=400, detail="File must be a CSV")
@@ -40,7 +40,7 @@ async def upload_csv(
         if not is_valid:
             raise HTTPException(status_code=400, detail=error_message)
         
-        # Store the dataframe in a temp file
+        # Store the dataframe in a temp file, return file_id
         file_id = str(uuid.uuid4())
         temp_path = os.path.join(tempfile.gettempdir(), f"linkedin_upload_{file_id}.pkl")
         with open(temp_path, "wb") as f:
@@ -54,7 +54,7 @@ async def upload_csv(
             total_rows=len(df),
             columns=df.columns.tolist(),
             preview_data=preview_data,
-            file_id=file_id  # Add file_id to response
+            file_id=file_id
         )
         
     except HTTPException:
@@ -69,10 +69,10 @@ async def filter_connections(
     csv_service: CSVService = Depends(get_csv_service),
     ai_service: AIService = Depends(get_ai_service)
 ):
-    """Filter connections using AI-generated code, loading DataFrame from temp file"""
+    """Filter connections using AI-generated code, loading DataFrame from temp file (stateless)"""
     try:
-        # Load the uploaded dataframe from temp file
-        if not hasattr(request, 'file_id') or not request.file_id:
+        # Load the uploaded dataframe from temp file using file_id
+        if not request.file_id:
             raise HTTPException(status_code=400, detail="No file_id provided. Please upload a file first.")
         temp_path = os.path.join(tempfile.gettempdir(), f"linkedin_upload_{request.file_id}.pkl")
         if not os.path.exists(temp_path):

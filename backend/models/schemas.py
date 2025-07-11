@@ -5,7 +5,8 @@ from enum import Enum
 class FilterRequest(BaseModel):
     """Request model for filtering connections"""
     prompt: str = Field(..., description="Natural language prompt for filtering", min_length=1, max_length=500)
-    
+    file_id: Optional[str] = None  # Add file_id for stateless operation
+
 class FilterResponse(BaseModel):
     """Response model for filtered results"""
     success: bool
@@ -28,6 +29,7 @@ class FileUploadResponse(BaseModel):
     total_rows: int
     columns: List[str]
     preview_data: List[dict]
+    file_id: Optional[str] = None  # Add file_id to upload response
 
 class ProcessingStatus(str, Enum):
     """Enum for processing status"""
