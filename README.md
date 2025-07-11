@@ -11,6 +11,8 @@ pinned: false
 
 # LinkedIn Connections Filter
 
+🚀 **Live Demo:** [Try LinkReach on Hugging Face Spaces](https://sankalpjain23-linkreach.hf.space/)
+
 A modern, AI-powered web application for filtering LinkedIn connections using natural language prompts. Built with FastAPI backend and a clean, responsive frontend.
 
 ## 🚀 Features
