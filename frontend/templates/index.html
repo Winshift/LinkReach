@@ -23,15 +23,117 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Help Section -->
-            <section class="help-section" id="helpSection">
+            <!-- 1. AI Filter Section (Prompt always visible) -->
+            <section class="prompt-section" id="promptSection">
                 <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-magic"></i> AI Filter</h2>
+                        <p>Describe what you're looking for in natural language</p>
+                    </div>
+                    <div class="filter-form" id="filterPromptWrapper" style="flex-direction: column; gap: 0.5em;">
+                        <div id="uploadedInfo" style="display:none; padding: 0.35em 1em; background: #e6f4ea; color: #256029; border-radius: 1em; font-weight: 500; font-size: 0.98em; display: none; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                            <i class="fas fa-check-circle" style="color: #2ecc40;"></i>
+                            <span>A file is uploaded and ready for filtering.</span>
+                        </div>
+                        <div class="form-group" id="filterPromptLabelGroup" style="flex-direction: column;">
+                            <label for="promptInput" style="margin-bottom: 0.5em;">Filter Prompt</label>
+                            <textarea 
+                                id="promptInput" 
+                                placeholder="e.g., Show me all software engineers at Google, or Find people in marketing roles..."
+                                rows="3"
+                                style="width: 100%; resize: vertical;"
+                            ></textarea>
+                        </div>
+                        <div class="form-actions" id="filterPromptActions">
+                            <button class="btn btn-primary" id="filterBtn" onclick="filterConnections()">
+                                <i class="fas fa-search"></i>
+                                Filter Connections
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetApp()" style="margin-left: 0.5em;">
+                                <i class="fas fa-redo"></i>
+                                Start Over
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-upload"></i> Upload Your Connections</h2>
+                        <p>Upload your LinkedIn connections CSV file to get started</p>
+                    </div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Drop your CSV file here</h3>
+                            <p>or click to browse</p>
+                            <input type="file" id="fileInput" accept=".csv" hidden>
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                Choose File
+                            </button>
+                        </div>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-csv"></i>
+                            <span id="fileName"></span>
+                            <span id="fileSize"></span>
+                            <span class="upload-status">
+                                <i class="fas fa-check-circle"></i>
+                                File uploaded successfully
+                            </span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Results Section (moved above help) -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-bar"></i> Results</h2>
+                        <div class="results-summary" id="resultsSummary"></div>
+                    </div>
+                    <div class="results-content">
+                        <div class="results-preview" id="resultsPreview"></div>
+                        <div class="results-actions">
+                            <button class="btn btn-success" id="downloadBtn" onclick="downloadResults()">
+                                <i class="fas fa-download"></i>
+                                Download Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. How to Export LinkedIn Connections (Help Section, collapsible) -->
+            <section class="help-section" id="helpSection">
+                <div class="card" id="helpPromptCard">
+                    <div class="card-header">
+                        <h2><i class="fas fa-question-circle"></i> Need Help?</h2>
+                        <p>Don't know how to export your LinkedIn connections?</p>
+                        <button class="btn btn-secondary" id="toggleInstructionsBtn" onclick="toggleInstructions()" style="margin-top: 1em;">
+                            <i class="fas fa-eye"></i> Show Instructions
+                        </button>
+                    </div>
+                </div>
+                <div class="card" id="helpInstructionsCard" style="display: none;">
                     <div class="card-header">
                         <h2><i class="fas fa-question-circle"></i> How to Export LinkedIn Connections</h2>
                         <p>Follow these steps to get your connections CSV file</p>
+                        <p style="margin-top: 0.5em;">
+                            <a href="https://evaboot.com/blog/export-linkedin-contacts" target="_blank" rel="noopener" style="color: #256029; font-weight: 500; text-decoration: underline;">
+                                Helpful Guide: How To Export LinkedIn Contacts
+                            </a>
+                        </p>
                     </div>
-                    
-                    <div class="help-content">
+                    <div class="help-content" id="helpInstructions" style="display: block;">
                         <div class="help-steps">
                             <div class="step">
                                 <div class="step-number">1</div>
@@ -155,99 +257,6 @@
                             <i class="fas fa-eye"></i>
                             <span>Show Instructions</span>
                         </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Upload Section -->
-            <section class="upload-section" id="uploadSection">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-upload"></i> Upload Your Connections</h2>
-                        <p>Upload your LinkedIn connections CSV file to get started</p>
-                    </div>
-                    
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-content">
-                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                            <h3>Drop your CSV file here</h3>
-                            <p>or click to browse</p>
-                            <input type="file" id="fileInput" accept=".csv" hidden>
-                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                                Choose File
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="file-info" id="fileInfo" style="display: none;">
-                        <div class="file-details">
-                            <i class="fas fa-file-csv"></i>
-                            <span id="fileName"></span>
-                            <span id="fileSize"></span>
-                            <span class="upload-status">
-                                <i class="fas fa-check-circle"></i>
-                                File uploaded successfully
-                            </span>
-                        </div>
-                        <button class="btn btn-secondary" onclick="removeFile()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Prompt Section (Always Visible) -->
-            <section class="prompt-section" id="promptSection">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-magic"></i> AI Filter</h2>
-                        <p>Describe what you're looking for in natural language</p>
-                    </div>
-                    <div class="filter-form" id="filterPromptWrapper" style="display: none; flex-direction: column; gap: 0.5em;">
-                        <div id="uploadedInfo" style="display:none; padding: 0.35em 1em; background: #e6f4ea; color: #256029; border-radius: 1em; font-weight: 500; font-size: 0.98em; display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
-                            <i class="fas fa-check-circle" style="color: #2ecc40;"></i>
-                            <span>A file is uploaded and ready for filtering.</span>
-                        </div>
-                        <div class="form-group" id="filterPromptLabelGroup" style="display: none; flex-direction: column;">
-                            <label for="promptInput" style="margin-bottom: 0.5em;">Filter Prompt</label>
-                            <textarea 
-                                id="promptInput" 
-                                placeholder="e.g., Show me all software engineers at Google, or Find people in marketing roles..."
-                                rows="3"
-                                style="width: 100%; resize: vertical;"
-                            ></textarea>
-                        </div>
-                        <div class="form-actions" id="filterPromptActions" style="display: none;">
-                            <button class="btn btn-primary" id="filterBtn" onclick="filterConnections()">
-                                <i class="fas fa-search"></i>
-                                Filter Connections
-                            </button>
-                            <button class="btn btn-secondary" onclick="resetApp()" style="margin-left: 0.5em;">
-                                <i class="fas fa-redo"></i>
-                                Start Over
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Results Section -->
-            <section class="results-section" id="resultsSection" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-chart-bar"></i> Results</h2>
-                        <div class="results-summary" id="resultsSummary"></div>
-                    </div>
-                    
-                    <div class="results-content">
-                        <div class="results-preview" id="resultsPreview"></div>
-                        
-                        <div class="results-actions">
-                            <button class="btn btn-success" id="downloadBtn" onclick="downloadResults()">
-                                <i class="fas fa-download"></i>
-                                Download Results
-                            </button>
-                        </div>
                     </div>
                 </div>
             </section>

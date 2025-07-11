@@ -7,6 +7,7 @@ import tempfile
 import os
 import uuid
 import pickle
+import io
 
 from backend.models.schemas import FilterRequest, FilterResponse, ErrorResponse, FileUploadResponse
 from backend.services.csv_service import CSVService
@@ -35,7 +36,12 @@ async def upload_csv(
             raise HTTPException(status_code=400, detail="File must be a CSV")
         
         file_content = await file.read()
-        is_valid, error_message, df = csv_service.validate_csv(file_content)
+        # Skip the first 3 rows of the CSV
+        csv_io = io.BytesIO(file_content)
+        # Read CSV, skip first 3 rows
+        df = pd.read_csv(csv_io, skiprows=3)
+        # Validate the CSV after skipping rows
+        is_valid, error_message, df = csv_service.validate_csv(df.to_csv(index=False).encode())
         
         if not is_valid:
             raise HTTPException(status_code=400, detail=error_message)
