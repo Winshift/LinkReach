@@ -157,8 +157,12 @@ class LinkedInFilterApp {
             const result = await response.json();
             this.showResults(result);
             this.showToast('Filtering completed successfully!', 'success');
-            document.getElementById('promptInput').value = '';
-            // Do not hide the prompt section or disable the filter button
+            // document.getElementById('promptInput').value = '';
+            // Scroll to results section
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) {
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
         } catch (error) {
             this.showToast(`Filtering failed: ${error.message}`, 'error');
         } finally {
@@ -295,7 +299,7 @@ class LinkedInFilterApp {
         document.getElementById('promptInput').value = '';
         document.getElementById('fileInfo').style.display = 'none';
         document.getElementById('uploadSection').style.display = 'block';
-        // Hide the uploaded info indicator
+        // Hide and clear the uploaded info indicator
         const uploadedInfo = document.getElementById('uploadedInfo');
         if (uploadedInfo) {
             uploadedInfo.style.display = 'none';

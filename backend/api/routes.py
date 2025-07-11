@@ -8,6 +8,7 @@ import os
 import uuid
 import pickle
 import io
+import csv
 
 from backend.models.schemas import FilterRequest, FilterResponse, ErrorResponse, FileUploadResponse
 from backend.services.csv_service import CSVService
@@ -36,10 +37,23 @@ async def upload_csv(
             raise HTTPException(status_code=400, detail="File must be a CSV")
         
         file_content = await file.read()
-        # Skip the first 3 rows of the CSV
-        csv_io = io.BytesIO(file_content)
-        # Read CSV, skip first 3 rows
-        df = pd.read_csv(csv_io, skiprows=3)
+        # Find the header row dynamically
+        csv_io = io.StringIO(file_content.decode())
+        reader = csv.reader(csv_io)
+        header_row_idx = None
+        expected_headers = ['First Name','Last Name','URL','Email Address','Company','Position','Connected On']
+        rows = list(reader)
+        for idx, row in enumerate(rows):
+            if [col.strip() for col in row] == expected_headers:
+                header_row_idx = idx
+                break
+        if header_row_idx is None:
+            raise HTTPException(status_code=400, detail="Could not find the expected header row in the uploaded CSV.")
+        # Read the CSV from the header row
+        csv_io.seek(0)
+        for _ in range(header_row_idx):
+            next(csv_io)
+        df = pd.read_csv(io.StringIO(file_content.decode()), skiprows=header_row_idx)
         # Validate the CSV after skipping rows
         is_valid, error_message, df = csv_service.validate_csv(df.to_csv(index=False).encode())
         
