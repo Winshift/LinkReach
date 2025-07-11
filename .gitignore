@@ -439,7 +439,7 @@ downloads/
 
 # AI model cache (if any)
 .cache/
-models/
+/models/
 
 # API documentation cache
 .openapi/ 

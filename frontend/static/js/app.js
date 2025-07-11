@@ -2,6 +2,7 @@
 class LinkedInFilterApp {
     constructor() {
         this.currentFile = null;
+        this.fileId = null; // Store file_id from backend
         this.apiBaseUrl = '/api';
         this.init();
     }
@@ -72,6 +73,7 @@ class LinkedInFilterApp {
             this.showLoading('Uploading file...');
             await this.uploadFile(file);
             this.showToast('File uploaded successfully!', 'success');
+            this.showFileUploadedIndicator(); // Show persistent info
             this.showFilterSection();
         } catch (error) {
             this.showToast(`Upload failed: ${error.message}`, 'error');
@@ -113,12 +115,15 @@ class LinkedInFilterApp {
         }
 
         const result = await response.json();
+        this.fileId = result.file_id; // Save file_id for later filter requests
+        console.log("fileId after upload:", this.fileId); // DEBUG LOG
         return result;
     }
 
     showFilterSection() {
         document.getElementById('uploadSection').style.display = 'none';
-        document.getElementById('filterSection').style.display = 'block';
+        // Do not hide the prompt section; it should always be visible
+        // document.getElementById('filterSection').style.display = 'block';
     }
 
     async filterConnections() {
@@ -128,7 +133,11 @@ class LinkedInFilterApp {
             this.showToast('Please enter a filter prompt', 'error');
             return;
         }
-
+        console.log("Sending filter request with file_id:", this.fileId); // DEBUG LOG
+        if (!this.fileId) {
+            this.showToast('No file uploaded or file_id missing', 'error');
+            return;
+        }
         try {
             this.showLoading('Generating filter code...');
             
@@ -137,7 +146,7 @@ class LinkedInFilterApp {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ prompt, file_id: this.fileId })
             });
 
             if (!response.ok) {
@@ -148,7 +157,8 @@ class LinkedInFilterApp {
             const result = await response.json();
             this.showResults(result);
             this.showToast('Filtering completed successfully!', 'success');
-            
+            document.getElementById('promptInput').value = '';
+            // Do not hide the prompt section or disable the filter button
         } catch (error) {
             this.showToast(`Filtering failed: ${error.message}`, 'error');
         } finally {
@@ -185,8 +195,8 @@ class LinkedInFilterApp {
             downloadBtn.style.display = 'none';
         }
 
-        // Show results section
-        document.getElementById('filterSection').style.display = 'none';
+        // Do not hide the prompt section; allow continuous prompting
+        // document.getElementById('filterSection').style.display = 'none';
         resultsSection.style.display = 'block';
     }
 
@@ -253,13 +263,45 @@ class LinkedInFilterApp {
         }
     }
 
+    showFileUploadedIndicator() {
+        // Show a persistent message or indicator that a file is uploaded
+        const uploadedInfo = document.getElementById('uploadedInfo');
+        const filterPromptWrapper = document.getElementById('filterPromptWrapper');
+        const filterPromptLabelGroup = document.getElementById('filterPromptLabelGroup');
+        const filterPromptActions = document.getElementById('filterPromptActions');
+        if (uploadedInfo) {
+            uploadedInfo.style.display = 'flex';
+            uploadedInfo.textContent = '';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-check-circle';
+            icon.style.color = '#2ecc40';
+            uploadedInfo.appendChild(icon);
+            const span = document.createElement('span');
+            span.textContent = 'A file is uploaded and ready for filtering.';
+            uploadedInfo.appendChild(span);
+        }
+        if (filterPromptWrapper) filterPromptWrapper.style.display = 'flex';
+        if (filterPromptLabelGroup) filterPromptLabelGroup.style.display = 'flex';
+        if (filterPromptActions) filterPromptActions.style.display = 'block';
+    }
+
     resetApp() {
         this.currentFile = null;
+        this.fileId = null; // Reset file_id
         document.getElementById('fileInput').value = '';
         document.getElementById('promptInput').value = '';
         document.getElementById('fileInfo').style.display = 'none';
         document.getElementById('uploadSection').style.display = 'block';
-        document.getElementById('filterSection').style.display = 'none';
+        // Hide the uploaded info indicator and filter prompt UI
+        const uploadedInfo = document.getElementById('uploadedInfo');
+        const filterPromptWrapper = document.getElementById('filterPromptWrapper');
+        const filterPromptLabelGroup = document.getElementById('filterPromptLabelGroup');
+        const filterPromptActions = document.getElementById('filterPromptActions');
+        if (uploadedInfo) uploadedInfo.style.display = 'none';
+        if (filterPromptWrapper) filterPromptWrapper.style.display = 'none';
+        if (filterPromptLabelGroup) filterPromptLabelGroup.style.display = 'none';
+        if (filterPromptActions) filterPromptActions.style.display = 'none';
+        // document.getElementById('filterSection').style.display = 'none';
         document.getElementById('resultsSection').style.display = 'none';
     }
 
@@ -307,11 +349,22 @@ class LinkedInFilterApp {
 // Global functions for HTML onclick handlers
 function removeFile() {
     app.currentFile = null;
+    app.fileId = null; // Reset file_id
     document.getElementById('fileInput').value = '';
     document.getElementById('fileInfo').style.display = 'none';
+    // Hide the uploaded info indicator and filter prompt UI
+    const uploadedInfo = document.getElementById('uploadedInfo');
+    const filterPromptWrapper = document.getElementById('filterPromptWrapper');
+    const filterPromptLabelGroup = document.getElementById('filterPromptLabelGroup');
+    const filterPromptActions = document.getElementById('filterPromptActions');
+    if (uploadedInfo) uploadedInfo.style.display = 'none';
+    if (filterPromptWrapper) filterPromptWrapper.style.display = 'none';
+    if (filterPromptLabelGroup) filterPromptLabelGroup.style.display = 'none';
+    if (filterPromptActions) filterPromptActions.style.display = 'none';
 }
 
 function filterConnections() {
+    // Always use the global app instance
     app.filterConnections();
 }
 

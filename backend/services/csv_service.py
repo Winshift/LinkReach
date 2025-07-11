@@ -5,8 +5,15 @@ import os
 from typing import Tuple, List, Dict, Any
 from pathlib import Path
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
+
+def clean_dataframe_for_json(df: pd.DataFrame) -> pd.DataFrame:
+    """Replace Inf/-Inf with NaN, then NaN with None for JSON compatibility"""
+    df = df.replace([np.inf, -np.inf], np.nan)
+    df = df.replace({np.nan: None})
+    return df
 
 class CSVService:
     """Service class for CSV operations"""
@@ -40,9 +47,10 @@ class CSVService:
             return False, f"Error processing CSV file: {str(e)}", pd.DataFrame()
     
     def get_preview_data(self, df: pd.DataFrame, max_rows: int = 5) -> List[Dict[str, Any]]:
-        """Get preview data from dataframe"""
+        """Get preview data from dataframe, safe for JSON"""
         try:
             preview_df = df.head(max_rows)
+            preview_df = clean_dataframe_for_json(preview_df)
             return preview_df.to_dict('records')
         except Exception as e:
             logger.error(f"Error getting preview data: {str(e)}")
@@ -53,8 +61,9 @@ class CSVService:
         try:
             if filename is None:
                 filename = f"filtered_results_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv"
-            
             file_path = self.temp_dir / filename
+            # Clean DataFrame before saving to CSV as well
+            df = clean_dataframe_for_json(df)
             df.to_csv(file_path, index=False)
             return str(file_path)
             
