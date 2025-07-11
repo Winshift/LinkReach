@@ -29,7 +29,7 @@ async def upload_csv(
     file: UploadFile = File(...),
     csv_service: CSVService = Depends(get_csv_service)
 ):
-    """Upload and validate CSV file, store DataFrame in a temp file, return file_id (stateless)"""
+    logger.info(f"/upload called with filename: {file.filename}")
     try:
         if not file.filename.endswith('.csv'):
             raise HTTPException(status_code=400, detail="File must be a CSV")
@@ -40,6 +40,10 @@ async def upload_csv(
         if not is_valid:
             raise HTTPException(status_code=400, detail=error_message)
         
+        # Check for empty data (only headers, no rows)
+        if df.empty:
+            raise HTTPException(status_code=400, detail="Uploaded CSV contains only headers and no data rows.")
+        
         # Store the dataframe in a temp file, return file_id
         file_id = str(uuid.uuid4())
         temp_path = os.path.join(tempfile.gettempdir(), f"linkedin_upload_{file_id}.pkl")
@@ -47,6 +51,7 @@ async def upload_csv(
             pickle.dump(df, f)
         
         preview_data = csv_service.get_preview_data(df)
+        logger.info(f"/upload success: file_id={file_id}, rows={len(df)}")
         
         return FileUploadResponse(
             success=True,
@@ -69,16 +74,19 @@ async def filter_connections(
     csv_service: CSVService = Depends(get_csv_service),
     ai_service: AIService = Depends(get_ai_service)
 ):
-    """Filter connections using AI-generated code, loading DataFrame from temp file (stateless)"""
+    logger.info(f"/filter called with prompt: {request.prompt}, file_id: {request.file_id}")
     try:
         # Load the uploaded dataframe from temp file using file_id
         if not request.file_id:
+            logger.warning("/filter: No file_id provided")
             raise HTTPException(status_code=400, detail="No file_id provided. Please upload a file first.")
         temp_path = os.path.join(tempfile.gettempdir(), f"linkedin_upload_{request.file_id}.pkl")
         if not os.path.exists(temp_path):
+            logger.warning(f"/filter: Uploaded file not found for file_id={request.file_id}")
             raise HTTPException(status_code=400, detail="Uploaded file not found. Please upload again.")
         with open(temp_path, "rb") as f:
             df = pickle.load(f)
+        logger.info(f"/filter: Loaded DataFrame for file_id={request.file_id}, rows={len(df)}")
         
         # Generate sample data for AI
         sample_df = df.head(5).to_string(index=False)
@@ -88,12 +96,14 @@ async def filter_connections(
         
         # Validate the generated code
         if not ai_service.validate_filter_code(filter_code):
+            logger.error("/filter: Generated filter code is invalid")
             raise HTTPException(status_code=500, detail="Generated filter code is invalid")
         
         # Execute the filter code
         local_vars = {'df': df.copy()}
         exec(filter_code, {}, local_vars)
         filtered_df = local_vars['df']
+        logger.info(f"/filter: Filtered DataFrame, result rows={len(filtered_df)}")
         
         # Save filtered results
         download_path = csv_service.save_filtered_results(filtered_df)
@@ -118,7 +128,7 @@ async def filter_connections(
 
 @router.get("/download/{filename}")
 async def download_results(filename: str):
-    """Download filtered results"""
+    logger.info(f"/download called for filename: {filename}")
     try:
         csv_service = CSVService()
         file_path = csv_service.temp_dir / filename
@@ -128,6 +138,7 @@ async def download_results(filename: str):
         logger.info(f"Temp dir contents: {list(csv_service.temp_dir.glob('*'))}")
         
         if not file_path.exists():
+            logger.warning(f"/download: File not found: {filename}")
             raise HTTPException(status_code=404, detail=f"File not found: {filename}")
         
         return FileResponse(
@@ -144,5 +155,5 @@ async def download_results(filename: str):
 
 @router.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    logger.info("/health check called")
     return {"status": "healthy", "message": "LinkedIn Connections Filter API is running"} 

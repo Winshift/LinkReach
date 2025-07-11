@@ -196,28 +196,35 @@
                 </div>
             </section>
 
-            <!-- Filter Section -->
-            <section class="filter-section" id="filterSection" style="display: none;">
+            <!-- Prompt Section (Always Visible) -->
+            <section class="prompt-section" id="promptSection">
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-magic"></i> AI Filter</h2>
                         <p>Describe what you're looking for in natural language</p>
                     </div>
-                    
-                    <div class="filter-form">
-                        <div class="form-group">
-                            <label for="promptInput">Filter Prompt</label>
+                    <div class="filter-form" id="filterPromptWrapper" style="display: none; flex-direction: column; gap: 0.5em;">
+                        <div id="uploadedInfo" style="display:none; padding: 0.35em 1em; background: #e6f4ea; color: #256029; border-radius: 1em; font-weight: 500; font-size: 0.98em; display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                            <i class="fas fa-check-circle" style="color: #2ecc40;"></i>
+                            <span>A file is uploaded and ready for filtering.</span>
+                        </div>
+                        <div class="form-group" id="filterPromptLabelGroup" style="display: none; flex-direction: column;">
+                            <label for="promptInput" style="margin-bottom: 0.5em;">Filter Prompt</label>
                             <textarea 
                                 id="promptInput" 
                                 placeholder="e.g., Show me all software engineers at Google, or Find people in marketing roles..."
                                 rows="3"
+                                style="width: 100%; resize: vertical;"
                             ></textarea>
                         </div>
-                        
-                        <div class="form-actions">
+                        <div class="form-actions" id="filterPromptActions" style="display: none;">
                             <button class="btn btn-primary" id="filterBtn" onclick="filterConnections()">
                                 <i class="fas fa-search"></i>
                                 Filter Connections
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetApp()" style="margin-left: 0.5em;">
+                                <i class="fas fa-redo"></i>
+                                Start Over
                             </button>
                         </div>
                     </div>
@@ -239,10 +246,6 @@
                             <button class="btn btn-success" id="downloadBtn" onclick="downloadResults()">
                                 <i class="fas fa-download"></i>
                                 Download Results
-                            </button>
-                            <button class="btn btn-secondary" onclick="resetApp()">
-                                <i class="fas fa-redo"></i>
-                                Start Over
                             </button>
                         </div>
                     </div>
